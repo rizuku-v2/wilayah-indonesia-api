@@ -1,4 +1,4 @@
-# 🗺️ API Wilayah Indonesia (Static)
+# 🗺️ API Wilayah Indonesia (Static) v3.0
 
 > 🇮🇩 [Bahasa Indonesia](#bahasa-indonesia) | 🇬🇧 [English](#english)
 
@@ -15,7 +15,7 @@
 ### ✨ Fitur
 
 - **38 Provinsi** — termasuk 4 provinsi Papua baru (2022)
-- **500+ Kabupaten/Kota** — dengan penanda tipe `kabupaten` atau `kota`
+- **500+ Kabupaten/Kota** — dengan penanda tipe `kabupaten`, `kota`, atau `kabupaten_administrasi`
 - **7.000+ Kecamatan**
 - **80.000+ Kelurahan/Desa** — dilengkapi **Kode Pos**
 - **Auto-update bulanan** via GitHub Actions
@@ -116,6 +116,12 @@ Base URL: `https://USERNAME.github.io/wilayah-indonesia-api`
     "province_code": "32",
     "name": "KOTA BOGOR",
     "type": "kota"
+  },
+  {
+    "code": "3172",
+    "province_code": "31",
+    "name": "KOTA ADMINISTRASI JAKARTA SELATAN",
+    "type": "kabupaten_administrasi"
   }
 ]
 ```
@@ -160,12 +166,22 @@ Base URL: `https://USERNAME.github.io/wilayah-indonesia-api`
 {
   "generated_at": 1700000000,
   "generated_at_iso": "2024-11-14T10:00:00Z",
-  "version": "2.0",
+  "version": "3.0",
+  "source": "cahyadsn/wilayah + sooluh/kodepos",
+  "license": "Open Data / MIT",
   "total": {
     "provinces": 38,
     "regencies": 514,
     "districts": 7285,
     "villages": 83762
+  },
+  "total_size_bytes": 12345678,
+  "endpoints": {
+    "provinces":  "/api/provinces.json",
+    "regencies":  "/api/regencies/{province_code}.json",
+    "districts":  "/api/districts/{regency_code}.json",
+    "villages":   "/api/villages/{district_code}.json",
+    "search":     "/api/search.json"
   }
 }
 ```
@@ -239,7 +255,7 @@ Opsi:
   --force        Re-download paksa (bypass cache)
   --clean        Hapus direktori api/ sebelum generate
   --no-kodepos   Tanpa enrichment kode pos (lebih cepat)
-  --source       Pilih sumber: 'sql' (default) atau 'emsifa' (fallback)
+  --source       Pilih sumber: 'sql' (default) atau 'csv' (fallback CSV)
   --dry-run      Parse saja tanpa menulis file
 ```
 
@@ -266,9 +282,9 @@ Untuk trigger manual:
 
 | Sumber | Digunakan untuk |
 |---|---|
-| [cahyadsn/wilayah_db](https://github.com/cahyadsn/wilayah_db) | Data wilayah utama (SQL) |
-| [emsifa/api-wilayah-indonesia](https://github.com/emsifa/api-wilayah-indonesia) | Fallback wilayah (JSON) |
-| [ibnux/data-indonesia](https://github.com/ibnux/data-indonesia) | Kode Pos |
+| [cahyadsn/wilayah](https://github.com/cahyadsn/wilayah) | Data wilayah utama (SQL — Kepmendagri 2025) |
+| [kodewilayah/permendagri-72-2019](https://github.com/kodewilayah/permendagri-72-2019) | Fallback wilayah (CSV) |
+| [sooluh/kodepos](https://github.com/sooluh/kodepos) | Kode Pos |
 
 Data mengacu pada kode resmi BPS (Badan Pusat Statistik) dan Kemendagri (Kementerian Dalam Negeri) Republik Indonesia.
 
@@ -293,7 +309,7 @@ Kode generator: [MIT License](./LICENSE)
 ### ✨ Features
 
 - **38 Provinces** — including 4 new Papua provinces (2022)
-- **500+ Regencies/Cities** — labeled with type `kabupaten` (regency) or `kota` (city)
+- **500+ Regencies/Cities** — labeled with type `kabupaten` (regency), `kota` (city), or `kabupaten_administrasi` (administrative regency)
 - **7,000+ Districts**
 - **80,000+ Sub-districts/Villages** — with **Postal Codes**
 - **Monthly auto-update** via GitHub Actions
@@ -394,6 +410,12 @@ Base URL: `https://USERNAME.github.io/wilayah-indonesia-api`
     "province_code": "32",
     "name": "KOTA BOGOR",
     "type": "kota"
+  },
+  {
+    "code": "3172",
+    "province_code": "31",
+    "name": "KOTA ADMINISTRASI JAKARTA SELATAN",
+    "type": "kabupaten_administrasi"
   }
 ]
 ```
@@ -438,12 +460,22 @@ Base URL: `https://USERNAME.github.io/wilayah-indonesia-api`
 {
   "generated_at": 1700000000,
   "generated_at_iso": "2024-11-14T10:00:00Z",
-  "version": "2.0",
+  "version": "3.0",
+  "source": "cahyadsn/wilayah + sooluh/kodepos",
+  "license": "Open Data / MIT",
   "total": {
     "provinces": 38,
     "regencies": 514,
     "districts": 7285,
     "villages": 83762
+  },
+  "total_size_bytes": 12345678,
+  "endpoints": {
+    "provinces":  "/api/provinces.json",
+    "regencies":  "/api/regencies/{province_code}.json",
+    "districts":  "/api/districts/{regency_code}.json",
+    "villages":   "/api/villages/{district_code}.json",
+    "search":     "/api/search.json"
   }
 }
 ```
@@ -517,7 +549,7 @@ Options:
   --force        Force re-download (bypass cache)
   --clean        Remove api/ directory before generating
   --no-kodepos   Skip postal code enrichment (faster)
-  --source       Choose source: 'sql' (default) or 'emsifa' (fallback)
+  --source       Choose source: 'sql' (default) or 'csv' (CSV fallback)
   --dry-run      Parse only, without writing files
 ```
 
@@ -544,9 +576,9 @@ To trigger manually:
 
 | Source | Used for |
 |---|---|
-| [cahyadsn/wilayah_db](https://github.com/cahyadsn/wilayah_db) | Primary region data (SQL) |
-| [emsifa/api-wilayah-indonesia](https://github.com/emsifa/api-wilayah-indonesia) | Region fallback (JSON) |
-| [ibnux/data-indonesia](https://github.com/ibnux/data-indonesia) | Postal Codes |
+| [cahyadsn/wilayah](https://github.com/cahyadsn/wilayah) | Primary region data (SQL — Kepmendagri 2025) |
+| [kodewilayah/permendagri-72-2019](https://github.com/kodewilayah/permendagri-72-2019) | Region fallback (CSV) |
+| [sooluh/kodepos](https://github.com/sooluh/kodepos) | Postal Codes |
 
 Data is based on official codes from BPS (Statistics Indonesia) and Kemendagri (Ministry of Home Affairs) of the Republic of Indonesia.
 
