@@ -3,665 +3,1257 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🗺️ API Wilayah Indonesia</title>
+<title>Wilayah Indonesia API</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:       #0f1117;
-    --surface:  #1a1d2e;
-    --border:   #2a2d3e;
-    --accent:   #6c63ff;
-    --accent2:  #00d4aa;
-    --text:     #e2e8f0;
-    --muted:    #64748b;
-    --success:  #10b981;
-    --warning:  #f59e0b;
-    --red:      #ef4444;
-    --code-bg:  #0d1117;
-    --radius:   12px;
-  }
+:root {
+  --bg:       #060d1c;
+  --bg2:      #0a1423;
+  --surface:  #0f1b2d;
+  --surface2: #142135;
+  --border:   #1c2f4a;
+  --border2:  #253d5e;
+  --gold:     #e8a000;
+  --gold2:    #f5c642;
+  --teal:     #00b8d9;
+  --teal2:    #4ad4ec;
+  --text:     #d0e4f7;
+  --text2:    #90aec8;
+  --muted:    #4e6e8a;
+  --success:  #00c896;
+  --error:    #ff4d6a;
+  --warning:  #f59e0b;
+  --mono:     'JetBrains Mono', monospace;
+  --sans:     'Plus Jakarta Sans', system-ui, sans-serif;
+  --r:        12px;
+  --r-lg:     18px;
+  --r-xl:     24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.6;
+  overflow-x:hidden;
+}
 
-  body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
-  }
+/* ═══ TOPBAR ═══ */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(6,13,28,0.82);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(28,47,74,0.8);
+  padding:0 24px;
+  height:58px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.brand{
+  display:flex;align-items:center;gap:10px;
+  font-weight:700;font-size:.95rem;
+  color:var(--text);text-decoration:none;
+  letter-spacing:-.01em;
+}
+.brand-mark{
+  width:34px;height:34px;
+  border-radius:9px;
+  background:linear-gradient(135deg,var(--gold) 0%,#c47800 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+  box-shadow:0 0 0 1px rgba(232,160,0,.3);
+}
+.topbar-right{display:flex;align-items:center;gap:6px}
+.topbar-right a{
+  padding:6px 13px;border-radius:8px;
+  color:var(--muted);text-decoration:none;
+  font-size:.82rem;font-weight:600;
+  transition:all .18s;display:flex;align-items:center;gap:6px;
+}
+.topbar-right a:hover{background:var(--surface);color:var(--text2)}
+.topbar-right .gh-btn{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  color:var(--text2);
+}
+.topbar-right .gh-btn:hover{border-color:var(--gold);color:var(--gold)}
 
-  /* ── Header ── */
-  header {
-    background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 100%);
-    border-bottom: 1px solid var(--border);
-    padding: 24px 20px;
-    text-align: center;
-  }
-  header h1 {
-    font-size: clamp(1.4rem, 4vw, 2rem);
-    font-weight: 700;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 6px;
-  }
-  header p { color: var(--muted); font-size: 0.9rem; }
+/* ═══ HERO ═══ */
+.hero{
+  padding-top:58px;
+  position:relative;overflow:hidden;
+}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(28,47,74,.35) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(28,47,74,.35) 1px,transparent 1px);
+  background-size:44px 44px;
+  mask-image:radial-gradient(ellipse 80% 100% at 50% 0%,black 0%,transparent 75%);
+}
+.hero-glow{position:absolute;border-radius:50%;filter:blur(130px);opacity:.11}
+.hero-glow.g1{width:700px;height:700px;background:var(--gold);top:-180px;left:-200px}
+.hero-glow.g2{width:600px;height:600px;background:var(--teal);top:-60px;right:-180px}
 
-  /* ── Stats bar ── */
-  .stats-bar {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
-    padding: 16px 20px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-  }
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: var(--muted);
-  }
-  .stat strong { color: var(--accent2); font-size: 1rem; }
-  .stat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+.hero-inner{
+  max-width:960px;margin:0 auto;
+  padding:72px 24px 56px;
+  position:relative;z-index:2;
+  text-align:center;
+}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:5px 14px;
+  background:rgba(232,160,0,.08);
+  border:1px solid rgba(232,160,0,.22);
+  border-radius:999px;
+  font-size:.72rem;font-weight:700;
+  color:var(--gold);letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:22px;
+}
+.chip-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);
+  animation:dotpulse 2.4s ease-in-out infinite;
+}
+@keyframes dotpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
 
-  /* ── Layout ── */
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 32px 20px;
-    display: grid;
-    gap: 24px;
-  }
+.hero-h1{
+  font-size:clamp(2.1rem,5.5vw,3.8rem);
+  font-weight:800;line-height:1.12;
+  letter-spacing:-.03em;
+  margin-bottom:18px;
+}
+.h1-line1{display:block;color:var(--text)}
+.h1-line2{
+  display:block;
+  background:linear-gradient(95deg,var(--gold) 0%,var(--gold2) 45%,var(--teal) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  padding-bottom:4px;
+}
+.hero-sub{
+  font-size:1rem;color:var(--text2);
+  max-width:500px;margin:0 auto 36px;
+  font-weight:400;line-height:1.65;
+}
+.hero-sub strong{color:var(--text);font-weight:600}
 
-  /* ── Card ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .card-header {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-  .card-body { padding: 20px; }
+/* stats pills */
+.stats-pills{
+  display:flex;justify-content:center;
+  flex-wrap:wrap;gap:10px;
+}
+.stat-pill{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:9px 18px;
+  display:flex;align-items:center;gap:10px;
+  font-size:.84rem;color:var(--text2);
+  transition:border-color .2s;
+}
+.stat-pill:hover{border-color:var(--border2)}
+.stat-pill .icon{font-size:1rem}
+.stat-pill strong{
+  font-size:1.05rem;font-weight:700;
+  color:var(--gold);letter-spacing:-.01em;
+  font-variant-numeric:tabular-nums;
+}
 
-  /* ── Form ── */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 16px;
-  }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-group label {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
+/* ═══ MAIN ═══ */
+.main{
+  max-width:1140px;margin:0 auto;
+  padding:40px 24px 96px;
+  display:grid;gap:26px;
+}
 
-  select {
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 14px center;
-    padding-right: 38px;
-  }
-  select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
-  }
-  select:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ═══ API BASE BAR ═══ */
+.api-bar{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:12px 18px;
+  display:flex;align-items:center;gap:10px;
+  font-size:.82rem;color:var(--muted);
+  flex-wrap:wrap;
+}
+.api-bar .lbl{
+  font-weight:700;color:var(--text2);font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.07em;
+}
+.api-bar code{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:7px;padding:4px 11px;
+  font-family:var(--mono);font-size:.79rem;
+  color:var(--teal2);word-break:break-all;
+}
+.api-bar .tip{font-size:.78rem;color:var(--muted);flex:1}
+.api-bar .tip code{background:none;border:none;padding:0;color:var(--gold)}
 
-  /* ── Postal code result ── */
-  .result-box {
-    margin-top: 16px;
-    padding: 16px 20px;
-    border-radius: 8px;
-    background: rgba(0, 212, 170, 0.07);
-    border: 1px solid rgba(0, 212, 170, 0.2);
-    display: none;
-  }
-  .result-box.show { display: flex; align-items: center; gap: 14px; }
-  .result-box .icon { font-size: 2rem; }
-  .result-box .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .result-box .kodepos { font-size: 1.6rem; font-weight: 700; color: var(--accent2); letter-spacing: 0.1em; }
-  .result-box .alamat { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+/* ═══ GRID 2-COL ═══ */
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:26px;align-items:start;
+}
 
-  /* ── API Request log ── */
-  .log {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    font-size: 0.8rem;
-  }
-  .log-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px 12px;
-    background: var(--code-bg);
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    word-break: break-all;
-  }
-  .log-item .method {
-    padding: 1px 6px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
-  .method.get    { background: rgba(16,185,129,0.15); color: var(--success); }
-  .method.ok     { background: rgba(0,212,170,0.15);  color: var(--accent2); }
-  .method.error  { background: rgba(239,68,68,0.15);  color: var(--red); }
-  .method.pending{ background: rgba(245,158,11,0.15); color: var(--warning); }
-  .log-item .url  { color: var(--muted); flex: 1; }
-  .log-item .url span { color: var(--text); }
-  .log-empty { color: var(--muted); font-style: italic; padding: 12px; text-align: center; }
+/* ═══ CARD ═══ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  overflow:hidden;
+}
+.card-head{
+  padding:15px 20px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+  font-weight:600;font-size:.88rem;
+}
+.head-icon{
+  width:32px;height:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;flex-shrink:0;
+}
+.head-icon.gold{background:rgba(232,160,0,.1);border:1px solid rgba(232,160,0,.2)}
+.head-icon.teal{background:rgba(0,184,217,.1);border:1px solid rgba(0,184,217,.2)}
+.head-icon.green{background:rgba(0,200,150,.1);border:1px solid rgba(0,200,150,.2)}
+.card-body{padding:20px}
 
-  /* ── Code block ── */
-  .code-block {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-  .code-block pre {
-    padding: 16px;
-    overflow-x: auto;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 0.8rem;
-    line-height: 1.7;
-  }
-  .kw  { color: #c792ea; }
-  .str { color: #c3e88d; }
-  .var { color: #82aaff; }
-  .fn  { color: #89ddf5; }
-  .cm  { color: #546e7a; }
-  .nb  { color: #f78c6c; }
+/* ═══ STEP TRAIL ═══ */
+.step-trail{
+  display:flex;align-items:center;
+  margin-bottom:22px;
+  position:relative;
+}
+.step-node{
+  display:flex;align-items:center;gap:7px;
+  position:relative;z-index:1;
+}
+.step-circ{
+  width:26px;height:26px;border-radius:50%;
+  border:2px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;color:var(--muted);
+  background:var(--surface);
+  flex-shrink:0;transition:all .3s;
+}
+.step-lbl{
+  font-size:.73rem;font-weight:600;color:var(--muted);
+  white-space:nowrap;transition:color .3s;
+}
+.step-connector{
+  flex:1;height:1px;
+  background:var(--border);
+  margin:0 8px;transition:background .3s;
+}
+.step-node.active .step-circ{border-color:var(--gold);background:rgba(232,160,0,.12);color:var(--gold)}
+.step-node.active .step-lbl{color:var(--text2)}
+.step-node.done .step-circ{border-color:var(--success);background:var(--success);color:#fff}
+.step-node.done .step-lbl{color:var(--success)}
+.step-connector.done{background:rgba(0,200,150,.3)}
 
-  /* ── Badges ── */
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px 8px;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    font-weight: 600;
-  }
-  .badge-purple { background: rgba(108,99,255,0.15); color: var(--accent); }
-  .badge-green  { background: rgba(16,185,129,0.15); color: var(--success); }
-  .badge-teal   { background: rgba(0,212,170,0.15);  color: var(--accent2); }
+/* ═══ FORM GROUPS ═══ */
+.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.form-group:last-of-type{margin-bottom:0}
+.form-label{
+  font-size:.72rem;font-weight:700;
+  color:var(--muted);text-transform:uppercase;
+  letter-spacing:.08em;display:flex;align-items:center;gap:7px;
+}
+.form-label .num{
+  width:19px;height:19px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;color:var(--muted);
+}
 
-  /* ── Config notice ── */
-  .config-bar {
-    padding: 10px 20px;
-    background: rgba(108,99,255,0.07);
-    border: 1px solid rgba(108,99,255,0.2);
-    border-radius: 8px;
-    font-size: 0.8rem;
-    color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .config-bar code {
-    background: var(--code-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--accent);
-    font-family: monospace;
-    font-size: 0.78rem;
-  }
+select{
+  width:100%;padding:11px 40px 11px 14px;
+  background:var(--bg2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-family:var(--sans);font-size:.88rem;
+  cursor:pointer;
+  transition:border-color .2s,box-shadow .2s;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%234e6e8a' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+  background-color:var(--bg2);
+}
+select:focus{
+  outline:none;
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(232,160,0,.1);
+}
+select:disabled{opacity:.32;cursor:not-allowed}
+select.loaded{border-color:rgba(0,200,150,.3)}
 
-  /* ── Loading spinner ── */
-  .spinner {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ═══ RESULT CARD ═══ */
+.result-card{
+  margin-top:18px;
+  border-radius:var(--r);
+  background:linear-gradient(135deg,rgba(232,160,0,.05),rgba(0,184,217,.05));
+  border:1px solid rgba(232,160,0,.18);
+  overflow:hidden;
+  display:none;
+  animation:slideUp .35s cubic-bezier(.2,.6,.3,1);
+}
+.result-card.show{display:block}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 24px;
-    color: var(--muted);
-    font-size: 0.8rem;
-    border-top: 1px solid var(--border);
-  }
-  footer a { color: var(--accent); text-decoration: none; }
+.result-top{
+  padding:16px 18px;
+  display:flex;align-items:center;gap:16px;
+}
+.result-kodepos{
+  font-size:2.3rem;font-weight:800;
+  letter-spacing:.15em;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1;flex-shrink:0;
+}
+.result-no-kodepos{
+  font-size:1rem;font-weight:600;
+  color:var(--muted);flex-shrink:0;
+}
+.result-divider{width:1px;height:40px;background:rgba(232,160,0,.2);flex-shrink:0}
+.result-info{flex:1;min-width:0}
+.result-vilname{font-weight:700;font-size:.92rem;color:var(--text);line-height:1.3}
+.result-addr{font-size:.78rem;color:var(--muted);margin-top:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.result-label{font-size:.65rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-bottom:5px}
 
-  @media (max-width: 600px) {
-    .form-grid { grid-template-columns: 1fr; }
-    .stats-bar { gap: 10px; }
-  }
+.result-codes{
+  display:flex;flex-wrap:wrap;gap:5px;
+  padding:10px 18px;
+  background:rgba(0,0,0,.18);
+  border-top:1px solid rgba(232,160,0,.1);
+}
+.rcode{
+  padding:3px 9px;border-radius:6px;
+  background:var(--surface2);border:1px solid var(--border);
+  font-family:var(--mono);font-size:.7rem;color:var(--teal2);
+  display:flex;align-items:center;gap:5px;
+}
+.rcode .rl{color:var(--muted)}
+
+/* ═══ LOG ═══ */
+.log-list{
+  display:flex;flex-direction:column;gap:5px;
+  max-height:400px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.log-list::-webkit-scrollbar{width:4px}
+.log-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.log-entry{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:8px 10px;border-radius:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  font-family:var(--mono);font-size:.74rem;
+  animation:fadeIn .2s ease;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+.log-m{
+  padding:2px 7px;border-radius:5px;
+  font-size:.64rem;font-weight:700;
+  flex-shrink:0;text-transform:uppercase;margin-top:1px;
+}
+.log-m.get    {background:rgba(0,184,217,.14);color:var(--teal2)}
+.log-m.ok     {background:rgba(0,200,150,.14);color:var(--success)}
+.log-m.error  {background:rgba(255,77,106,.14);color:var(--error)}
+.log-m.pending{background:rgba(245,158,11,.14);color:var(--warning)}
+
+.log-url{flex:1;color:var(--muted);word-break:break-all;line-height:1.45}
+.log-url span{color:var(--text)}
+.log-url .extra{color:var(--muted);margin-left:6px;font-size:.67rem}
+
+.log-time{font-size:.65rem;color:var(--muted);flex-shrink:0;margin-top:2px}
+
+.log-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:36px 20px;
+  color:var(--muted);font-size:.85rem;text-align:center;gap:10px;
+}
+.log-empty .big-icon{font-size:2rem;opacity:.35}
+
+/* ═══ SEARCH ═══ */
+.search-wrap{position:relative}
+.search-input{
+  width:100%;padding:11px 42px 11px 14px;
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);
+  font-family:var(--sans);font-size:.88rem;
+  transition:all .2s;
+}
+.search-input:focus{
+  outline:none;border-color:var(--teal);
+  box-shadow:0 0 0 3px rgba(0,184,217,.1);
+}
+.search-input::placeholder{color:var(--muted)}
+.search-icon{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  color:var(--muted);font-size:.95rem;pointer-events:none;
+}
+
+.search-results{
+  margin-top:10px;
+  display:flex;flex-direction:column;gap:4px;
+  max-height:290px;overflow-y:auto;
+  scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+}
+.sri{
+  padding:10px 14px;border-radius:9px;
+  background:var(--bg2);border:1px solid var(--border);
+  cursor:pointer;transition:all .15s;
+  position:relative;
+}
+.sri:hover{border-color:var(--border2);background:var(--surface2)}
+
+.sri-badge{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:.64rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 7px;border-radius:4px;margin-bottom:4px;
+}
+.sri-badge.provinsi{background:rgba(0,200,150,.1);color:var(--success)}
+.sri-badge.kabupaten{background:rgba(232,160,0,.1);color:var(--gold)}
+.sri-badge.kota{background:rgba(0,184,217,.1);color:var(--teal2)}
+
+.sri-code{
+  position:absolute;right:14px;top:10px;
+  font-family:var(--mono);font-size:.7rem;color:var(--muted);
+}
+.sri-name{font-weight:700;font-size:.88rem;color:var(--text);display:block}
+.sri-prov{font-size:.76rem;color:var(--muted);margin-top:2px}
+
+.search-empty{
+  text-align:center;padding:18px;
+  color:var(--muted);font-size:.82rem;
+}
+
+/* ═══ TABS ═══ */
+.tab-bar{
+  display:flex;gap:2px;padding:5px;
+  background:var(--bg2);border-radius:10px;
+  margin-bottom:16px;border:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:8px 14px;border:none;
+  background:transparent;border-radius:7px;
+  color:var(--muted);font-family:var(--sans);
+  font-size:.82rem;font-weight:600;cursor:pointer;
+  transition:all .2s;
+}
+.tab-btn.active{
+  background:var(--surface);color:var(--text);
+  box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.tab-btn:hover:not(.active){color:var(--text2)}
+
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+
+/* ═══ CODE BLOCK ═══ */
+.code-wrap{
+  background:var(--bg);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.code-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+}
+.code-lang{
+  font-size:.72rem;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.07em;
+  display:flex;align-items:center;gap:7px;
+}
+.lang-dot{width:8px;height:8px;border-radius:50%;background:var(--teal)}
+.copy-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 11px;border:1px solid var(--border2);
+  border-radius:6px;background:var(--surface);
+  color:var(--muted);font-size:.72rem;
+  font-family:var(--sans);font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.copy-btn.copied{border-color:var(--success);color:var(--success)}
+.code-wrap pre{
+  padding:18px;overflow-x:auto;
+  font-family:var(--mono);font-size:.79rem;line-height:1.8;
+}
+.kw{color:#c792ea}
+.str{color:#c3e88d}
+.v{color:#82aaff}
+.fn{color:#89ddf5}
+.cm{color:#546e7a}
+.nb{color:#f78c6c}
+.at{color:#e8a000}
+
+/* ═══ ENDPOINTS ═══ */
+.ep-list{display:flex;flex-direction:column;gap:6px}
+.ep-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;gap:10px;
+  padding:11px 14px;border-radius:9px;
+  background:var(--bg2);border:1px solid var(--border);
+  font-family:var(--mono);font-size:.8rem;
+  transition:border-color .18s;
+  cursor:default;
+}
+.ep-row:hover{border-color:var(--border2)}
+.ep-method{
+  padding:2px 9px;border-radius:5px;
+  font-size:.64rem;font-weight:800;
+  background:rgba(0,184,217,.13);color:var(--teal2);
+  white-space:nowrap;
+}
+.ep-path{color:var(--muted)}
+.ep-path span{color:var(--text)}
+.ep-path .param{color:var(--gold)}
+.ep-desc{
+  font-family:var(--sans);font-size:.76rem;
+  color:var(--muted);text-align:right;white-space:nowrap;
+}
+
+/* ═══ BADGES ═══ */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 9px;border-radius:999px;
+  font-size:.69rem;font-weight:700;
+}
+.badge-gold {background:rgba(232,160,0,.1);color:var(--gold);border:1px solid rgba(232,160,0,.2)}
+.badge-teal {background:rgba(0,184,217,.1);color:var(--teal2);border:1px solid rgba(0,184,217,.2)}
+.badge-green{background:rgba(0,200,150,.1);color:var(--success);border:1px solid rgba(0,200,150,.2)}
+
+/* ═══ SPINNER ═══ */
+.spin{
+  display:inline-block;width:12px;height:12px;
+  border:2px solid var(--border2);
+  border-top-color:var(--gold);border-radius:50%;
+  animation:spin .6s linear infinite;flex-shrink:0;margin-top:1px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ SECTION DIVIDER ═══ */
+.section-label{
+  display:flex;align-items:center;gap:12px;
+  color:var(--muted);font-size:.75rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.09em;
+  margin-bottom:-6px;
+}
+.section-label::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* ═══ FOOTER ═══ */
+footer{
+  text-align:center;padding:28px 24px;
+  color:var(--muted);font-size:.8rem;
+  border-top:1px solid var(--border);
+}
+footer a{color:var(--teal2);text-decoration:none;transition:color .2s}
+footer a:hover{color:var(--gold)}
+.footer-divider{margin:0 6px;opacity:.4}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:860px){
+  .grid2{grid-template-columns:1fr}
+  .ep-row{grid-template-columns:auto 1fr;grid-template-rows:auto auto}
+  .ep-desc{text-align:left;grid-column:2}
+}
+@media(max-width:600px){
+  .brand span{display:none}
+  .hero-inner{padding:48px 16px 36px}
+  .stats-pills{gap:7px}
+  .stat-pill{font-size:.8rem;padding:7px 14px}
+  .main{padding:24px 16px 72px}
+  .step-lbl{display:none}
+}
 </style>
 </head>
 <body>
 
-<!-- ── Header ─────────────────────────────────────── -->
-<header>
-  <h1>🗺️ API Wilayah Indonesia</h1>
-  <p>Static API · Self-hosted · GitHub Pages · Zero downtime</p>
+<!-- TOPBAR -->
+<header class="topbar">
+  <a class="brand" href="#">
+    <div class="brand-mark">🗺️</div>
+    <span>Wilayah Indonesia API</span>
+  </a>
+  <nav class="topbar-right">
+    <a href="#explorer">Explorer</a>
+    <a href="#endpoints">Endpoints</a>
+    <a href="https://github.com/rizuku-v2/wilayah-indonesia-api" target="_blank" rel="noopener" class="gh-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub
+    </a>
+  </nav>
 </header>
 
-<!-- ── Stats bar ──────────────────────────────────── -->
-<div class="stats-bar" id="statsBar">
-  <div class="stat"><div class="stat-dot"></div><strong id="statProv">–</strong> Provinsi</div>
-  <div class="stat"><div class="stat-dot"></div><strong id="statReg">–</strong> Kab/Kota</div>
-  <div class="stat"><div class="stat-dot"></div><strong id="statDist">–</strong> Kecamatan</div>
-  <div class="stat"><div class="stat-dot"></div><strong id="statVil">–</strong> Kel/Desa</div>
-</div>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grid"></div>
+    <div class="hero-glow g1"></div>
+    <div class="hero-glow g2"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-chip">
+      <div class="chip-dot"></div>
+      Static API &middot; GitHub Pages &middot; Auto-Update Bulanan
+    </div>
+    <h1 class="hero-h1">
+      <span class="h1-line1">Data Wilayah</span>
+      <span class="h1-line2">Indonesia API</span>
+    </h1>
+    <p class="hero-sub">
+      <strong>38 provinsi</strong> &middot; <strong>500+ kab/kota</strong> &middot; <strong>7.000+ kecamatan</strong> &middot; <strong>80.000+ kel/desa</strong> dengan kode pos. Bebas downtime, bebas rate limit, bebas biaya server.
+    </p>
+    <div class="stats-pills">
+      <div class="stat-pill"><span class="icon">🏛️</span> <strong id="statProv">38</strong> Provinsi</div>
+      <div class="stat-pill"><span class="icon">🏙️</span> <strong id="statReg">514</strong> Kab/Kota</div>
+      <div class="stat-pill"><span class="icon">🏘️</span> <strong id="statDist">7.285</strong> Kecamatan</div>
+      <div class="stat-pill"><span class="icon">🏡</span> <strong id="statVil">83.762</strong> Kel/Desa</div>
+    </div>
+  </div>
+</section>
 
-<main class="container">
+<!-- MAIN -->
+<main class="main">
 
-  <!-- ── Config ─────────────────────────────────── -->
-  <div class="config-bar" id="configBar">
-    📡 API Base: <code id="apiBaseDisplay">–</code>
-    &nbsp;·&nbsp; Edit konstanta <code>API_BASE</code> di source halaman ini untuk domain custom
+  <!-- API Base Notice -->
+  <div class="api-bar">
+    <span class="lbl">📡 API Base</span>
+    <code id="apiBaseDisplay">–</code>
+    <span class="tip">Edit konstanta <code>API_BASE</code> di source untuk domain custom</span>
   </div>
 
-  <!-- ── Selector ───────────────────────────────── -->
-  <div class="card">
-    <div class="card-header">
-      <span>🔽</span> Pilih Wilayah
-      <span class="badge badge-purple">Cascading</span>
-    </div>
-    <div class="card-body">
-      <div class="form-grid">
+  <!-- SECTION: Explorer + Log -->
+  <div class="section-label" id="explorer">🔽 Explorer & Live Log</div>
+
+  <div class="grid2">
+
+    <!-- CASCADING EXPLORER -->
+    <div class="card">
+      <div class="card-head">
+        <div class="head-icon gold">🔍</div>
+        <span>Pilih Wilayah</span>
+        <span class="badge badge-gold" style="margin-left:auto">Cascading</span>
+      </div>
+      <div class="card-body">
+
+        <!-- Step Trail -->
+        <div class="step-trail">
+          <div class="step-node active" id="step1">
+            <div class="step-circ">1</div>
+            <span class="step-lbl">Provinsi</span>
+          </div>
+          <div class="step-connector" id="sc1"></div>
+          <div class="step-node" id="step2">
+            <div class="step-circ">2</div>
+            <span class="step-lbl">Kab/Kota</span>
+          </div>
+          <div class="step-connector" id="sc2"></div>
+          <div class="step-node" id="step3">
+            <div class="step-circ">3</div>
+            <span class="step-lbl">Kecamatan</span>
+          </div>
+          <div class="step-connector" id="sc3"></div>
+          <div class="step-node" id="step4">
+            <div class="step-circ">4</div>
+            <span class="step-lbl">Kel/Desa</span>
+          </div>
+        </div>
 
         <div class="form-group">
-          <label>Provinsi</label>
+          <label class="form-label">
+            <span class="num">1</span> Provinsi
+          </label>
           <select id="selProv" onchange="onProvChange()">
             <option value="">— Pilih Provinsi —</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Kabupaten / Kota</label>
+          <label class="form-label">
+            <span class="num">2</span> Kabupaten / Kota
+          </label>
           <select id="selReg" disabled onchange="onRegChange()">
-            <option value="">— Pilih Kab/Kota —</option>
+            <option value="">— Pilih Kabupaten/Kota —</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Kecamatan</label>
+          <label class="form-label">
+            <span class="num">3</span> Kecamatan
+          </label>
           <select id="selDist" disabled onchange="onDistChange()">
             <option value="">— Pilih Kecamatan —</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label>Kelurahan / Desa</label>
+          <label class="form-label">
+            <span class="num">4</span> Kelurahan / Desa
+          </label>
           <select id="selVil" disabled onchange="onVilChange()">
-            <option value="">— Pilih Kel/Desa —</option>
+            <option value="">— Pilih Kelurahan/Desa —</option>
           </select>
         </div>
 
-      </div>
+        <!-- Result -->
+        <div class="result-card" id="resultBox">
+          <div class="result-top">
+            <div>
+              <div class="result-label">Kode Pos</div>
+              <div class="result-kodepos" id="resultKodepos">—</div>
+            </div>
+            <div class="result-divider"></div>
+            <div class="result-info">
+              <div class="result-vilname" id="resultVilName">—</div>
+              <div class="result-addr" id="resultAddr"></div>
+            </div>
+          </div>
+          <div class="result-codes" id="resultCodes"></div>
+        </div>
 
-      <!-- Kode Pos result -->
-      <div class="result-box" id="resultBox">
-        <div class="icon">📮</div>
-        <div>
-          <div class="label">Kode Pos</div>
-          <div class="kodepos" id="resultKodepos">—</div>
-          <div class="alamat" id="resultAlamat"></div>
+      </div>
+    </div>
+
+    <!-- API LOG -->
+    <div class="card">
+      <div class="card-head">
+        <div class="head-icon teal">📋</div>
+        <span>API Request Log</span>
+        <span class="badge badge-teal" id="reqCount" style="margin-left:auto">0 requests</span>
+      </div>
+      <div class="card-body">
+        <div class="log-list" id="logContainer">
+          <div class="log-empty">
+            <div class="big-icon">📡</div>
+            <span>Belum ada request.<br>Pilih provinsi di atas untuk memulai.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEARCH -->
+  <div class="section-label" id="search-section">🔎 Pencarian Cepat</div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="head-icon teal">🔎</div>
+      <span>Cari Provinsi atau Kab/Kota</span>
+      <span class="badge badge-teal" style="margin-left:auto">search.json</span>
+    </div>
+    <div class="card-body">
+      <div class="search-wrap">
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Ketik nama wilayah, misal: Bekasi, Surabaya, Aceh..."
+          oninput="onSearch()"
+          autocomplete="off"
+        >
+        <span class="search-icon">🔍</span>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- ENDPOINTS -->
+  <div class="section-label" id="endpoints">📡 Endpoint Reference</div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="head-icon gold">📡</div>
+      <span>Endpoint Reference</span>
+      <span class="badge badge-green" style="margin-left:auto">REST · JSON · CORS</span>
+    </div>
+    <div class="card-body">
+      <div class="ep-list">
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/<span>provinces.json</span></span>
+          <span class="ep-desc">Semua provinsi</span>
+        </div>
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/regencies/<span class="param">{kode_provinsi}</span>.json</span>
+          <span class="ep-desc">Kab/kota dalam provinsi</span>
+        </div>
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/districts/<span class="param">{kode_kabupaten}</span>.json</span>
+          <span class="ep-desc">Kecamatan dalam kab/kota</span>
+        </div>
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/villages/<span class="param">{kode_kecamatan}</span>.json</span>
+          <span class="ep-desc">Kelurahan/desa + kode pos</span>
+        </div>
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/<span>search.json</span></span>
+          <span class="ep-desc">Index provinsi + kab/kota</span>
+        </div>
+        <div class="ep-row">
+          <span class="ep-method">GET</span>
+          <span class="ep-path">/api/<span>meta.json</span></span>
+          <span class="ep-desc">Metadata &amp; statistik</span>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ── API Request Log ──────────────────────────── -->
-  <div class="card">
-    <div class="card-header">
-      <span>📋</span> API Request Log
-      <span class="badge badge-teal" id="reqCount">0 requests</span>
-    </div>
-    <div class="card-body">
-      <div class="log" id="logContainer">
-        <div class="log-empty">Belum ada request. Pilih provinsi di atas.</div>
-      </div>
-    </div>
-  </div>
+  <!-- CODE EXAMPLES -->
+  <div class="section-label">💻 Contoh Penggunaan</div>
 
-  <!-- ── Code Example ─────────────────────────────── -->
   <div class="card">
-    <div class="card-header">
-      <span>💻</span> Contoh Penggunaan
-      <span class="badge badge-green">JavaScript</span>
+    <div class="card-head">
+      <div class="head-icon green">💻</div>
+      <span>Contoh Kode</span>
     </div>
     <div class="card-body">
-      <div class="code-block">
-<pre><span class="cm">// Ganti BASE dengan URL GitHub Pages kamu</span>
-<span class="kw">const</span> <span class="var">BASE</span> = <span class="str">'https://username.github.io/wilayah-indonesia-api/api'</span>;
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('js',this)">JavaScript</button>
+        <button class="tab-btn" onclick="switchTab('react',this)">React / Next.js</button>
+        <button class="tab-btn" onclick="switchTab('php',this)">PHP</button>
+      </div>
+
+      <!-- JS -->
+      <div class="tab-pane active" id="tab-js">
+        <div class="code-wrap">
+          <div class="code-toolbar">
+            <span class="code-lang"><span class="lang-dot"></span>JavaScript · Fetch API</span>
+            <button class="copy-btn" onclick="copyCode('pre-js')">📋 Salin kode</button>
+          </div>
+<pre id="pre-js"><span class="kw">const</span> <span class="v">BASE</span> = <span class="str">'https://username.github.io/wilayah-indonesia-api/api'</span>;
 
 <span class="cm">// 1. Ambil semua provinsi</span>
-<span class="kw">const</span> <span class="var">provinces</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/provinces.json`</span>)
-  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+<span class="kw">const</span> <span class="v">provinces</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="v">${BASE}</span>/provinces.json`</span>)
+  .<span class="fn">then</span>(<span class="v">r</span> => <span class="v">r</span>.<span class="fn">json</span>());
 
 <span class="cm">// 2. Kab/kota dalam Jawa Barat (kode "32")</span>
-<span class="kw">const</span> <span class="var">regencies</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/regencies/32.json`</span>)
-  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+<span class="kw">const</span> <span class="v">regencies</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="v">${BASE}</span>/regencies/32.json`</span>)
+  .<span class="fn">then</span>(<span class="v">r</span> => <span class="v">r</span>.<span class="fn">json</span>());
 
 <span class="cm">// 3. Kecamatan dalam Kab. Bogor (kode "3201")</span>
-<span class="kw">const</span> <span class="var">districts</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/districts/3201.json`</span>)
-  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+<span class="kw">const</span> <span class="v">districts</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="v">${BASE}</span>/districts/3201.json`</span>)
+  .<span class="fn">then</span>(<span class="v">r</span> => <span class="v">r</span>.<span class="fn">json</span>());
 
 <span class="cm">// 4. Kelurahan/desa + kode pos dalam Kec. Nanggung</span>
-<span class="kw">const</span> <span class="var">villages</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/districts/320101.json`</span>)
-  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+<span class="kw">const</span> <span class="v">villages</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="v">${BASE}</span>/villages/320101.json`</span>)
+  .<span class="fn">then</span>(<span class="v">r</span> => <span class="v">r</span>.<span class="fn">json</span>());
 
 <span class="cm">// Tampilkan kode pos desa tertentu</span>
-<span class="kw">const</span> <span class="var">desa</span> = <span class="var">villages</span>.<span class="fn">find</span>(<span class="var">v</span> => <span class="var">v</span>.name === <span class="str">'MALASARI'</span>);
-console.<span class="fn">log</span>(<span class="var">desa</span>?.postal_code); <span class="cm">// "16650"</span>
-</pre>
+<span class="kw">const</span> <span class="v">desa</span> = <span class="v">villages</span>.<span class="fn">find</span>(<span class="v">v</span> => <span class="v">v</span>.<span class="at">name</span> === <span class="str">'MALASARI'</span>);
+<span class="fn">console</span>.<span class="fn">log</span>(<span class="v">desa</span>?.<span class="at">postal_code</span>); <span class="cm">// "16650"</span></pre>
+        </div>
       </div>
-    </div>
-  </div>
 
-  <!-- ── Endpoints Reference ───────────────────────── -->
-  <div class="card">
-    <div class="card-header">
-      <span>📡</span> Endpoint Reference
-    </div>
-    <div class="card-body">
-      <div class="log">
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/<span>provinces.json</span></span>
-        </div>
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/regencies/<span>{kode_provinsi}</span>.json</span>
-        </div>
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/districts/<span>{kode_kabupaten}</span>.json</span>
-        </div>
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/villages/<span>{kode_kecamatan}</span>.json</span>
-        </div>
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/<span>search.json</span>  ← provinsi + kab/kota (flat)</span>
-        </div>
-        <div class="log-item">
-          <span class="method get">GET</span>
-          <span class="url">/api/<span>meta.json</span>  ← statistik & metadata generasi</span>
+      <!-- React -->
+      <div class="tab-pane" id="tab-react">
+        <div class="code-wrap">
+          <div class="code-toolbar">
+            <span class="code-lang"><span class="lang-dot" style="background:#61dafb"></span>React / Next.js · SWR</span>
+            <button class="copy-btn" onclick="copyCode('pre-react')">📋 Salin kode</button>
+          </div>
+<pre id="pre-react"><span class="kw">import</span> useSWR <span class="kw">from</span> <span class="str">'swr'</span>;
+
+<span class="kw">const</span> <span class="v">BASE</span> = <span class="v">process</span>.<span class="at">env</span>.<span class="at">NEXT_PUBLIC_WILAYAH_API</span>;
+<span class="kw">const</span> <span class="v">fetcher</span> = (<span class="v">url</span>: <span class="v">string</span>) => <span class="fn">fetch</span>(<span class="v">url</span>).<span class="fn">then</span>(<span class="v">r</span> => <span class="v">r</span>.<span class="fn">json</span>());
+
+<span class="kw">export function</span> <span class="fn">ProvinceSelect</span>() {
+  <span class="kw">const</span> { <span class="at">data</span>: <span class="v">provinces</span>, <span class="at">isLoading</span> } = <span class="fn">useSWR</span>(
+    <span class="str">`<span class="v">${BASE}</span>/provinces.json`</span>, <span class="v">fetcher</span>
+  );
+
+  <span class="kw">if</span> (<span class="v">isLoading</span>) <span class="kw">return</span> <span class="fn">&lt;select disabled&gt;&lt;option&gt;</span>Memuat…<span class="fn">&lt;/option&gt;&lt;/select&gt;</span>;
+
+  <span class="kw">return</span> (
+    <span class="fn">&lt;select&gt;</span>
+      <span class="fn">&lt;option</span> <span class="at">value</span>=""<span class="fn">&gt;</span>Pilih Provinsi<span class="fn">&lt;/option&gt;</span>
+      {<span class="v">provinces</span>?.<span class="fn">map</span>((<span class="v">p</span>) => (
+        <span class="fn">&lt;option</span> <span class="at">key</span>={<span class="v">p</span>.<span class="at">code</span>} <span class="at">value</span>={<span class="v">p</span>.<span class="at">code</span>}<span class="fn">&gt;</span>
+          {<span class="v">p</span>.<span class="at">name</span>}
+        <span class="fn">&lt;/option&gt;</span>
+      ))}
+    <span class="fn">&lt;/select&gt;</span>
+  );
+}</pre>
         </div>
       </div>
+
+      <!-- PHP -->
+      <div class="tab-pane" id="tab-php">
+        <div class="code-wrap">
+          <div class="code-toolbar">
+            <span class="code-lang"><span class="lang-dot" style="background:#8892be"></span>PHP · file_get_contents</span>
+            <button class="copy-btn" onclick="copyCode('pre-php')">📋 Salin kode</button>
+          </div>
+<pre id="pre-php"><span class="v">$base</span> = <span class="str">'https://username.github.io/wilayah-indonesia-api/api'</span>;
+
+<span class="cm">// Ambil semua provinsi</span>
+<span class="v">$provinces</span> = <span class="fn">json_decode</span>(
+  <span class="fn">file_get_contents</span>(<span class="str">"<span class="v">$base</span>/provinces.json"</span>), <span class="nb">true</span>
+);
+
+<span class="cm">// Ambil kab/kota di Jawa Barat (kode "32")</span>
+<span class="v">$regencies</span> = <span class="fn">json_decode</span>(
+  <span class="fn">file_get_contents</span>(<span class="str">"<span class="v">$base</span>/regencies/32.json"</span>), <span class="nb">true</span>
+);
+
+<span class="cm">// Loop dan tampilkan hasil</span>
+<span class="kw">foreach</span> (<span class="v">$regencies</span> <span class="kw">as</span> <span class="v">$reg</span>) {
+  <span class="fn">echo</span> <span class="v">$reg</span>[<span class="str">'name'</span>] . <span class="str">' ('</span> . <span class="v">$reg</span>[<span class="str">'type'</span>] . <span class="str">")\n"</span>;
+}
+
+<span class="cm">// Atau gunakan Guzzle untuk project besar:</span>
+<span class="cm">// $client = new GuzzleHttp\Client(['base_uri' => $base]);</span>
+<span class="cm">// $prov   = json_decode($client->get('/provinces.json')->getBody(), true);</span></pre>
+        </div>
+      </div>
+
     </div>
   </div>
 
 </main>
 
 <footer>
-  Dibuat dengan 🤍 · Data: BPS / Kemendagri · Kode: MIT ·
-  <a href="https://github.com" target="_blank">GitHub</a>
+  Dibuat dengan ❤️ untuk Indonesia &nbsp;<span class="footer-divider">·</span>&nbsp;
+  Data: BPS / Kemendagri &nbsp;<span class="footer-divider">·</span>&nbsp;
+  Lisensi: MIT &nbsp;<span class="footer-divider">·</span>&nbsp;
+  <a href="https://github.com/rizuku-v2/wilayah-indonesia-api" target="_blank" rel="noopener">GitHub</a>
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════════════════════════════ -->
 <script>
-// ── Konfigurasi ──────────────────────────────────────────────────
-// Ganti dengan URL GitHub Pages kamu setelah deploy
-// Atau biarkan otomatis (dideteksi dari window.location)
+// ────────── CONFIG ──────────────────────────────────────────────
 const API_BASE = (() => {
   const loc = window.location;
-  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
-    return './api';
-  }
-  // GitHub Pages: https://username.github.io/repo/
+  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') return './api';
   const path = loc.pathname.replace(/\/[^\/]*$/, '');
   return `${loc.origin}${path}/api`;
 })();
 
-// ── State ────────────────────────────────────────────────────────
-let reqCount = 0;
-let logFirst = true;
-
-// ── Init ─────────────────────────────────────────────────────────
 document.getElementById('apiBaseDisplay').textContent = API_BASE;
 
+// ────────── STATE ──────────────────────────────────────────────
+let reqCount = 0;
+let logFirst = true;
+let logCounter = 0;
+let searchData = null;
+let sel = { prov: null, reg: null, dist: null, vil: null };
+
+// ────────── INIT ───────────────────────────────────────────────
 async function init() {
-  // Load meta stats
   try {
     const meta = await apiFetch('meta.json');
     if (meta?.total) {
-      document.getElementById('statProv').textContent  = fmt(meta.total.provinces);
-      document.getElementById('statReg').textContent   = fmt(meta.total.regencies);
-      document.getElementById('statDist').textContent  = fmt(meta.total.districts);
-      document.getElementById('statVil').textContent   = fmt(meta.total.villages);
+      animCounter('statProv', meta.total.provinces);
+      animCounter('statReg',  meta.total.regencies);
+      animCounter('statDist', meta.total.districts);
+      animCounter('statVil',  meta.total.villages);
     }
   } catch(e) {}
 
-  // Load provinces
   const provinces = await apiFetch('provinces.json');
   if (!provinces) return;
 
-  const sel = document.getElementById('selProv');
-  provinces.forEach(p => {
-    const opt = new Option(p.name, p.code);
-    sel.add(opt);
-  });
+  const el = document.getElementById('selProv');
+  provinces.forEach(p => el.add(new Option(p.name, p.code)));
+
+  // Preload search data
+  apiFetch('search.json').then(d => { searchData = d; }).catch(() => {});
 }
 
-// ── Cascading handlers ───────────────────────────────────────────
+// ────────── ANIMATED COUNTER ───────────────────────────────────
+function animCounter(id, target) {
+  const el = document.getElementById(id);
+  const from = parseInt(el.textContent.replace(/\D/g, '')) || 0;
+  const dur = 1400, start = Date.now();
+  const tick = () => {
+    const p = Math.min((Date.now() - start) / dur, 1);
+    const ease = 1 - Math.pow(1 - p, 4);
+    el.textContent = Math.round(from + (target - from) * ease).toLocaleString('id-ID');
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+// ────────── STEP TRAIL ─────────────────────────────────────────
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const node = document.getElementById(`step${i}`);
+    node.className = 'step-node' + (i < n ? ' done' : i === n ? ' active' : '');
+    if (i < 4) {
+      const conn = document.getElementById(`sc${i}`);
+      conn.classList.toggle('done', i < n);
+    }
+  }
+}
+
+// ────────── CASCADING SELECTS ──────────────────────────────────
 async function onProvChange() {
   const code = document.getElementById('selProv').value;
   resetFrom('reg');
-
-  if (!code) return;
+  if (!code) { setStep(1); return; }
+  sel.prov = document.getElementById('selProv').options[document.getElementById('selProv').selectedIndex].text;
+  setStep(2);
 
   setLoading('selReg', true);
   const regs = await apiFetch(`regencies/${code}.json`);
   setLoading('selReg', false);
-
   if (!regs) return;
 
-  const sel = document.getElementById('selReg');
-  sel.disabled = false;
+  const s = document.getElementById('selReg');
+  s.disabled = false;
+  s.classList.add('loaded');
   regs.forEach(r => {
-    const label = r.type === 'kota'
-      ? `Kota ${r.name.replace(/^KOTA\s+/i, '')}`
-      : r.name.replace(/^KABUPATEN\s+/i, 'Kab. ');
-    sel.add(new Option(label, r.code));
+    const lbl = r.type === 'kota'
+      ? `Kota ${r.name.replace(/^KOTA\s+/i,'')}`
+      : r.name.replace(/^KABUPATEN\s+/i,'Kab. ');
+    s.add(new Option(lbl, r.code));
   });
 }
 
 async function onRegChange() {
   const code = document.getElementById('selReg').value;
   resetFrom('dist');
-
-  if (!code) return;
+  if (!code) { setStep(2); return; }
+  sel.reg = document.getElementById('selReg').options[document.getElementById('selReg').selectedIndex].text;
+  setStep(3);
 
   setLoading('selDist', true);
   const dists = await apiFetch(`districts/${code}.json`);
   setLoading('selDist', false);
-
   if (!dists) return;
 
-  const sel = document.getElementById('selDist');
-  sel.disabled = false;
-  dists.forEach(d => sel.add(new Option(d.name, d.code)));
+  const s = document.getElementById('selDist');
+  s.disabled = false;
+  s.classList.add('loaded');
+  dists.forEach(d => s.add(new Option(d.name, d.code)));
 }
 
 async function onDistChange() {
   const code = document.getElementById('selDist').value;
   resetFrom('vil');
-
-  if (!code) return;
+  if (!code) { setStep(3); return; }
+  sel.dist = document.getElementById('selDist').options[document.getElementById('selDist').selectedIndex].text;
+  setStep(4);
 
   setLoading('selVil', true);
   const vils = await apiFetch(`villages/${code}.json`);
   setLoading('selVil', false);
-
   if (!vils) return;
 
-  const sel = document.getElementById('selVil');
-  sel.disabled = false;
+  const s = document.getElementById('selVil');
+  s.disabled = false;
+  s.classList.add('loaded');
   vils.forEach(v => {
-    const label = v.postal_code ? `${v.name} (${v.postal_code})` : v.name;
-    const opt = new Option(label, v.code);
-    opt.dataset.postal  = v.postal_code || '';
-    opt.dataset.name    = v.name;
-    sel.add(opt);
+    const lbl = v.postal_code ? `${v.name} (${v.postal_code})` : v.name;
+    const opt = new Option(lbl, v.code);
+    opt.dataset.postal = v.postal_code || '';
+    opt.dataset.name   = v.name;
+    opt.dataset.code   = v.code;
+    s.add(opt);
   });
 }
 
 function onVilChange() {
-  const sel  = document.getElementById('selVil');
-  const opt  = sel.options[sel.selectedIndex];
-  const box  = document.getElementById('resultBox');
+  const s = document.getElementById('selVil');
+  const opt = s.options[s.selectedIndex];
+  const box = document.getElementById('resultBox');
+  if (!s.value || !opt) { box.classList.remove('show'); return; }
 
-  if (!sel.value || !opt) {
-    box.classList.remove('show');
+  sel.vil = opt.dataset.name;
+  const postal = opt.dataset.postal;
+  const vilCode = opt.dataset.code;
+
+  document.getElementById('resultKodepos').textContent = postal || '–';
+  document.getElementById('resultVilName').textContent = opt.dataset.name;
+  document.getElementById('resultAddr').textContent =
+    [sel.dist, sel.reg, sel.prov].filter(Boolean).join(', ');
+
+  // Code badges
+  const provCode = document.getElementById('selProv').value;
+  const regCode  = document.getElementById('selReg').value;
+  const distCode = document.getElementById('selDist').value;
+  const codesEl  = document.getElementById('resultCodes');
+  codesEl.innerHTML = [
+    provCode && `<span class="rcode"><span class="rl">prov</span>${provCode}</span>`,
+    regCode  && `<span class="rcode"><span class="rl">kab</span>${regCode}</span>`,
+    distCode && `<span class="rcode"><span class="rl">kec</span>${distCode}</span>`,
+    vilCode  && `<span class="rcode"><span class="rl">kel</span>${vilCode}</span>`,
+    postal   && `<span class="rcode"><span class="rl">pos</span>${postal}</span>`,
+  ].filter(Boolean).join('');
+
+  box.classList.add('show');
+}
+
+// ────────── SEARCH ─────────────────────────────────────────────
+function onSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const cont = document.getElementById('searchResults');
+
+  if (!q || q.length < 2) { cont.innerHTML = ''; return; }
+
+  if (!searchData) {
+    cont.innerHTML = '<div class="search-empty">Data pencarian belum tersedia.</div>';
     return;
   }
 
-  const postal = opt.dataset.postal;
-  const vilName = opt.dataset.name;
+  const hits = [];
+  (searchData.provinces || []).forEach(p => {
+    if (p.name.toLowerCase().includes(q))
+      hits.push({ type:'provinsi', name:p.name, code:p.code, prov:'' });
+  });
+  (searchData.regencies || []).forEach(r => {
+    if (r.name.toLowerCase().includes(q)) {
+      const pName = (searchData.provinces || []).find(p => p.code === r.province_code)?.name || '';
+      hits.push({ type: r.type || 'kabupaten', name:r.name, code:r.code, prov:pName });
+    }
+  });
 
-  const prov  = document.getElementById('selProv').options[document.getElementById('selProv').selectedIndex]?.text || '';
-  const reg   = document.getElementById('selReg').options[document.getElementById('selReg').selectedIndex]?.text || '';
-  const dist  = document.getElementById('selDist').options[document.getElementById('selDist').selectedIndex]?.text || '';
+  if (!hits.length) {
+    cont.innerHTML = `<div class="search-empty">Tidak ditemukan hasil untuk "<strong>${q}</strong>"</div>`;
+    return;
+  }
 
-  document.getElementById('resultKodepos').textContent = postal || '(tidak tersedia)';
-  document.getElementById('resultAlamat').textContent  = `${vilName}, ${dist}, ${reg}, ${prov}`;
-
-  box.classList.toggle('show', true);
+  cont.innerHTML = hits.slice(0, 16).map(h => `
+    <div class="sri ${h.type}" onclick="onSearchClose()">
+      <span class="sri-badge ${h.type}">${h.type}</span>
+      <span class="sri-code">${h.code}</span>
+      <span class="sri-name">${h.name}</span>
+      ${h.prov ? `<div class="sri-prov">Provinsi ${h.prov}</div>` : ''}
+    </div>
+  `).join('');
 }
 
-// ── Helpers ──────────────────────────────────────────────────────
-function resetFrom(level) {
-  const order = ['reg', 'dist', 'vil'];
-  const idx   = order.indexOf(level);
-  order.slice(idx).forEach(id => {
-    const sel = document.getElementById(`sel${capitalize(id)}`);
-    sel.innerHTML = `<option value="">— Pilih ${labels[id]} —</option>`;
-    sel.disabled = true;
+function onSearchClose() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchResults').innerHTML = '';
+}
+
+// ────────── TABS ───────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(`tab-${tab}`).classList.add('active');
+}
+
+// ────────── COPY CODE ──────────────────────────────────────────
+function copyCode(preId) {
+  const text = document.getElementById(preId).innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(preId).closest('.code-wrap').querySelector('.copy-btn');
+    btn.textContent = '✅ Tersalin!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '📋 Salin kode';
+      btn.classList.remove('copied');
+    }, 2200);
+  });
+}
+
+// ────────── RESET ──────────────────────────────────────────────
+const LABELS = { reg:'Kabupaten/Kota', dist:'Kecamatan', vil:'Kelurahan/Desa' };
+function resetFrom(lvl) {
+  const order = ['reg','dist','vil'];
+  order.slice(order.indexOf(lvl)).forEach(id => {
+    const el = document.getElementById(`sel${id.charAt(0).toUpperCase()+id.slice(1)}`);
+    el.innerHTML = `<option value="">— Pilih ${LABELS[id]} —</option>`;
+    el.disabled = true;
+    el.classList.remove('loaded');
+    sel[id] = null;
   });
   document.getElementById('resultBox').classList.remove('show');
 }
 
-const labels = { reg: 'Kab/Kota', dist: 'Kecamatan', vil: 'Kel/Desa' };
-const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
-
-function setLoading(selId, loading) {
-  const sel = document.getElementById(selId);
-  if (loading) {
-    sel.innerHTML = `<option>⏳ Memuat…</option>`;
-  }
+function setLoading(id, on) {
+  if (on) document.getElementById(id).innerHTML = `<option>⏳ Memuat data…</option>`;
 }
 
-function fmt(n) {
-  return Number(n).toLocaleString('id-ID');
-}
-
+// ────────── API FETCH ──────────────────────────────────────────
 async function apiFetch(path) {
-  const url   = `${API_BASE}/${path}`;
-  const logId = addLog('pending', `GET`, url);
-
+  const url = `${API_BASE}/${path}`;
+  const logId = addLog(url);
   try {
+    const t0 = Date.now();
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    updateLog(logId, 'ok', `${res.status} OK · ${Array.isArray(data) ? data.length + ' items' : 'object'}`);
+    updateLog(logId, 'ok', Array.isArray(data) ? `${data.length} items` : 'object', Date.now() - t0);
     return data;
-  } catch (e) {
-    updateLog(logId, 'error', `${e.message}`);
+  } catch(e) {
+    updateLog(logId, 'error', e.message, null);
     return null;
   }
 }
 
-let logCounter = 0;
-
-function addLog(status, method, url) {
+// ────────── LOG ENTRIES ────────────────────────────────────────
+function addLog(url) {
   if (logFirst) {
     document.getElementById('logContainer').innerHTML = '';
     logFirst = false;
   }
-
-  const id = `log-${++logCounter}`;
   reqCount++;
   document.getElementById('reqCount').textContent = `${reqCount} request${reqCount > 1 ? 's' : ''}`;
-
-  // Trim URL display
-  const displayUrl = url.replace(API_BASE + '/', '');
+  const id = `log-${++logCounter}`;
+  const disp = url.replace(API_BASE + '/', '');
+  const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
 
   const el = document.createElement('div');
-  el.className = 'log-item';
+  el.className = 'log-entry';
   el.id = id;
   el.innerHTML = `
-    <span class="method ${status}">${method}</span>
-    <span class="url"><span>${displayUrl}</span></span>
-    <span class="spinner" id="${id}-spin"></span>
+    <span class="log-m pending">GET</span>
+    <span class="log-url"><span>${disp}</span></span>
+    <span class="spin"></span>
+    <span class="log-time">${time}</span>
   `;
 
-  const container = document.getElementById('logContainer');
-  container.prepend(el);
-
-  // Keep only 20 entries
-  while (container.children.length > 20) {
-    container.removeChild(container.lastChild);
-  }
-
+  const c = document.getElementById('logContainer');
+  c.prepend(el);
+  while (c.children.length > 24) c.removeChild(c.lastChild);
   return id;
 }
 
-function updateLog(id, status, msg) {
-  const el   = document.getElementById(id);
-  const spin = document.getElementById(`${id}-spin`);
-  if (spin) spin.remove();
-
-  const methodEl = el?.querySelector('.method');
-  if (methodEl) {
-    methodEl.className = `method ${status}`;
-    methodEl.textContent = status === 'ok' ? '200' : 'ERR';
-  }
-
-  const urlEl = el?.querySelector('.url');
-  if (urlEl) {
-    const extra = document.createElement('span');
-    extra.style.cssText = 'color:var(--muted);margin-left:8px;font-size:0.72rem';
-    extra.textContent = msg;
-    urlEl.appendChild(extra);
+function updateLog(id, status, msg, ms) {
+  const el = document.getElementById(id);
+  const sp = el?.querySelector('.spin');
+  if (sp) sp.remove();
+  const m = el?.querySelector('.log-m');
+  if (m) { m.className = `log-m ${status}`; m.textContent = status === 'ok' ? '200' : 'ERR'; }
+  const u = el?.querySelector('.log-url');
+  if (u) {
+    const ex = document.createElement('span');
+    ex.className = 'extra';
+    ex.textContent = ms != null ? `${msg} · ${ms}ms` : msg;
+    u.appendChild(ex);
   }
 }
 
-// ── Start ────────────────────────────────────────────────────────
+// ────────── START ──────────────────────────────────────────────
 init();
 </script>
 </body>
