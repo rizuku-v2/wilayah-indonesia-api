@@ -1,0 +1,6 @@
+# Wilayah Indonesia API Generator
+# Tidak ada dependency eksternal — hanya Python 3.8+ stdlib
+
+# Optional: untuk pengembangan / testing
+# pytest>=7.0
+# requests>=2.28  (bisa dipakai sebagai alternatif urllib)

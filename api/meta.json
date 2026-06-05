@@ -1,0 +1,21 @@
+{
+  "generated_at": 1780645377,
+  "generated_at_iso": "2026-06-05T07:42:57.295506Z",
+  "version": "3.0",
+  "source": "cahyadsn/wilayah + sooluh/kodepos",
+  "license": "Open Data / MIT",
+  "total": {
+    "provinces": 38,
+    "regencies": 514,
+    "districts": 7285,
+    "villages": 83762
+  },
+  "total_size_bytes": 7864200,
+  "endpoints": {
+    "provinces": "/api/provinces.json",
+    "regencies": "/api/regencies/{province_code}.json",
+    "districts": "/api/districts/{regency_code}.json",
+    "villages": "/api/villages/{district_code}.json",
+    "search": "/api/search.json"
+  }
+}

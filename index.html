@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🗺️ API Wilayah Indonesia</title>
+<style>
+  :root {
+    --bg:       #0f1117;
+    --surface:  #1a1d2e;
+    --border:   #2a2d3e;
+    --accent:   #6c63ff;
+    --accent2:  #00d4aa;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --success:  #10b981;
+    --warning:  #f59e0b;
+    --red:      #ef4444;
+    --code-bg:  #0d1117;
+    --radius:   12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1a1d2e 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 20px;
+    text-align: center;
+  }
+  header h1 {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+  header p { color: var(--muted); font-size: 0.9rem; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .stat strong { color: var(--accent2); font-size: 1rem; }
+  .stat-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px;
+    display: grid;
+    gap: 24px;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .card-body { padding: 20px; }
+
+  /* ── Form ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  select {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 38px;
+  }
+  select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.15);
+  }
+  select:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* ── Postal code result ── */
+  .result-box {
+    margin-top: 16px;
+    padding: 16px 20px;
+    border-radius: 8px;
+    background: rgba(0, 212, 170, 0.07);
+    border: 1px solid rgba(0, 212, 170, 0.2);
+    display: none;
+  }
+  .result-box.show { display: flex; align-items: center; gap: 14px; }
+  .result-box .icon { font-size: 2rem; }
+  .result-box .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .result-box .kodepos { font-size: 1.6rem; font-weight: 700; color: var(--accent2); letter-spacing: 0.1em; }
+  .result-box .alamat { font-size: 0.82rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── API Request log ── */
+  .log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+  .log-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--code-bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    word-break: break-all;
+  }
+  .log-item .method {
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .method.get    { background: rgba(16,185,129,0.15); color: var(--success); }
+  .method.ok     { background: rgba(0,212,170,0.15);  color: var(--accent2); }
+  .method.error  { background: rgba(239,68,68,0.15);  color: var(--red); }
+  .method.pending{ background: rgba(245,158,11,0.15); color: var(--warning); }
+  .log-item .url  { color: var(--muted); flex: 1; }
+  .log-item .url span { color: var(--text); }
+  .log-empty { color: var(--muted); font-style: italic; padding: 12px; text-align: center; }
+
+  /* ── Code block ── */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .code-block pre {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    line-height: 1.7;
+  }
+  .kw  { color: #c792ea; }
+  .str { color: #c3e88d; }
+  .var { color: #82aaff; }
+  .fn  { color: #89ddf5; }
+  .cm  { color: #546e7a; }
+  .nb  { color: #f78c6c; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+  .badge-purple { background: rgba(108,99,255,0.15); color: var(--accent); }
+  .badge-green  { background: rgba(16,185,129,0.15); color: var(--success); }
+  .badge-teal   { background: rgba(0,212,170,0.15);  color: var(--accent2); }
+
+  /* ── Config notice ── */
+  .config-bar {
+    padding: 10px 20px;
+    background: rgba(108,99,255,0.07);
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: 8px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .config-bar code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--accent);
+    font-family: monospace;
+    font-size: 0.78rem;
+  }
+
+  /* ── Loading spinner ── */
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .stats-bar { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ─────────────────────────────────────── -->
+<header>
+  <h1>🗺️ API Wilayah Indonesia</h1>
+  <p>Static API · Self-hosted · GitHub Pages · Zero downtime</p>
+</header>
+
+<!-- ── Stats bar ──────────────────────────────────── -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat"><div class="stat-dot"></div><strong id="statProv">–</strong> Provinsi</div>
+  <div class="stat"><div class="stat-dot"></div><strong id="statReg">–</strong> Kab/Kota</div>
+  <div class="stat"><div class="stat-dot"></div><strong id="statDist">–</strong> Kecamatan</div>
+  <div class="stat"><div class="stat-dot"></div><strong id="statVil">–</strong> Kel/Desa</div>
+</div>
+
+<main class="container">
+
+  <!-- ── Config ─────────────────────────────────── -->
+  <div class="config-bar" id="configBar">
+    📡 API Base: <code id="apiBaseDisplay">–</code>
+    &nbsp;·&nbsp; Edit konstanta <code>API_BASE</code> di source halaman ini untuk domain custom
+  </div>
+
+  <!-- ── Selector ───────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <span>🔽</span> Pilih Wilayah
+      <span class="badge badge-purple">Cascading</span>
+    </div>
+    <div class="card-body">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label>Provinsi</label>
+          <select id="selProv" onchange="onProvChange()">
+            <option value="">— Pilih Provinsi —</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Kabupaten / Kota</label>
+          <select id="selReg" disabled onchange="onRegChange()">
+            <option value="">— Pilih Kab/Kota —</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Kecamatan</label>
+          <select id="selDist" disabled onchange="onDistChange()">
+            <option value="">— Pilih Kecamatan —</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Kelurahan / Desa</label>
+          <select id="selVil" disabled onchange="onVilChange()">
+            <option value="">— Pilih Kel/Desa —</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Kode Pos result -->
+      <div class="result-box" id="resultBox">
+        <div class="icon">📮</div>
+        <div>
+          <div class="label">Kode Pos</div>
+          <div class="kodepos" id="resultKodepos">—</div>
+          <div class="alamat" id="resultAlamat"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── API Request Log ──────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <span>📋</span> API Request Log
+      <span class="badge badge-teal" id="reqCount">0 requests</span>
+    </div>
+    <div class="card-body">
+      <div class="log" id="logContainer">
+        <div class="log-empty">Belum ada request. Pilih provinsi di atas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Code Example ─────────────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <span>💻</span> Contoh Penggunaan
+      <span class="badge badge-green">JavaScript</span>
+    </div>
+    <div class="card-body">
+      <div class="code-block">
+<pre><span class="cm">// Ganti BASE dengan URL GitHub Pages kamu</span>
+<span class="kw">const</span> <span class="var">BASE</span> = <span class="str">'https://username.github.io/wilayah-indonesia-api/api'</span>;
+
+<span class="cm">// 1. Ambil semua provinsi</span>
+<span class="kw">const</span> <span class="var">provinces</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/provinces.json`</span>)
+  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+
+<span class="cm">// 2. Kab/kota dalam Jawa Barat (kode "32")</span>
+<span class="kw">const</span> <span class="var">regencies</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/regencies/32.json`</span>)
+  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+
+<span class="cm">// 3. Kecamatan dalam Kab. Bogor (kode "3201")</span>
+<span class="kw">const</span> <span class="var">districts</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/districts/3201.json`</span>)
+  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+
+<span class="cm">// 4. Kelurahan/desa + kode pos dalam Kec. Nanggung</span>
+<span class="kw">const</span> <span class="var">villages</span> = <span class="kw">await</span> <span class="fn">fetch</span>(<span class="str">`<span class="var">${BASE}</span>/districts/320101.json`</span>)
+  .<span class="fn">then</span>(<span class="var">r</span> => <span class="var">r</span>.<span class="fn">json</span>());
+
+<span class="cm">// Tampilkan kode pos desa tertentu</span>
+<span class="kw">const</span> <span class="var">desa</span> = <span class="var">villages</span>.<span class="fn">find</span>(<span class="var">v</span> => <span class="var">v</span>.name === <span class="str">'MALASARI'</span>);
+console.<span class="fn">log</span>(<span class="var">desa</span>?.postal_code); <span class="cm">// "16650"</span>
+</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Endpoints Reference ───────────────────────── -->
+  <div class="card">
+    <div class="card-header">
+      <span>📡</span> Endpoint Reference
+    </div>
+    <div class="card-body">
+      <div class="log">
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/<span>provinces.json</span></span>
+        </div>
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/regencies/<span>{kode_provinsi}</span>.json</span>
+        </div>
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/districts/<span>{kode_kabupaten}</span>.json</span>
+        </div>
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/villages/<span>{kode_kecamatan}</span>.json</span>
+        </div>
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/<span>search.json</span>  ← provinsi + kab/kota (flat)</span>
+        </div>
+        <div class="log-item">
+          <span class="method get">GET</span>
+          <span class="url">/api/<span>meta.json</span>  ← statistik & metadata generasi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Dibuat dengan 🤍 · Data: BPS / Kemendagri · Kode: MIT ·
+  <a href="https://github.com" target="_blank">GitHub</a>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════════ -->
+<script>
+// ── Konfigurasi ──────────────────────────────────────────────────
+// Ganti dengan URL GitHub Pages kamu setelah deploy
+// Atau biarkan otomatis (dideteksi dari window.location)
+const API_BASE = (() => {
+  const loc = window.location;
+  if (loc.hostname === 'localhost' || loc.hostname === '127.0.0.1') {
+    return './api';
+  }
+  // GitHub Pages: https://username.github.io/repo/
+  const path = loc.pathname.replace(/\/[^\/]*$/, '');
+  return `${loc.origin}${path}/api`;
+})();
+
+// ── State ────────────────────────────────────────────────────────
+let reqCount = 0;
+let logFirst = true;
+
+// ── Init ─────────────────────────────────────────────────────────
+document.getElementById('apiBaseDisplay').textContent = API_BASE;
+
+async function init() {
+  // Load meta stats
+  try {
+    const meta = await apiFetch('meta.json');
+    if (meta?.total) {
+      document.getElementById('statProv').textContent  = fmt(meta.total.provinces);
+      document.getElementById('statReg').textContent   = fmt(meta.total.regencies);
+      document.getElementById('statDist').textContent  = fmt(meta.total.districts);
+      document.getElementById('statVil').textContent   = fmt(meta.total.villages);
+    }
+  } catch(e) {}
+
+  // Load provinces
+  const provinces = await apiFetch('provinces.json');
+  if (!provinces) return;
+
+  const sel = document.getElementById('selProv');
+  provinces.forEach(p => {
+    const opt = new Option(p.name, p.code);
+    sel.add(opt);
+  });
+}
+
+// ── Cascading handlers ───────────────────────────────────────────
+async function onProvChange() {
+  const code = document.getElementById('selProv').value;
+  resetFrom('reg');
+
+  if (!code) return;
+
+  setLoading('selReg', true);
+  const regs = await apiFetch(`regencies/${code}.json`);
+  setLoading('selReg', false);
+
+  if (!regs) return;
+
+  const sel = document.getElementById('selReg');
+  sel.disabled = false;
+  regs.forEach(r => {
+    const label = r.type === 'kota'
+      ? `Kota ${r.name.replace(/^KOTA\s+/i, '')}`
+      : r.name.replace(/^KABUPATEN\s+/i, 'Kab. ');
+    sel.add(new Option(label, r.code));
+  });
+}
+
+async function onRegChange() {
+  const code = document.getElementById('selReg').value;
+  resetFrom('dist');
+
+  if (!code) return;
+
+  setLoading('selDist', true);
+  const dists = await apiFetch(`districts/${code}.json`);
+  setLoading('selDist', false);
+
+  if (!dists) return;
+
+  const sel = document.getElementById('selDist');
+  sel.disabled = false;
+  dists.forEach(d => sel.add(new Option(d.name, d.code)));
+}
+
+async function onDistChange() {
+  const code = document.getElementById('selDist').value;
+  resetFrom('vil');
+
+  if (!code) return;
+
+  setLoading('selVil', true);
+  const vils = await apiFetch(`villages/${code}.json`);
+  setLoading('selVil', false);
+
+  if (!vils) return;
+
+  const sel = document.getElementById('selVil');
+  sel.disabled = false;
+  vils.forEach(v => {
+    const label = v.postal_code ? `${v.name} (${v.postal_code})` : v.name;
+    const opt = new Option(label, v.code);
+    opt.dataset.postal  = v.postal_code || '';
+    opt.dataset.name    = v.name;
+    sel.add(opt);
+  });
+}
+
+function onVilChange() {
+  const sel  = document.getElementById('selVil');
+  const opt  = sel.options[sel.selectedIndex];
+  const box  = document.getElementById('resultBox');
+
+  if (!sel.value || !opt) {
+    box.classList.remove('show');
+    return;
+  }
+
+  const postal = opt.dataset.postal;
+  const vilName = opt.dataset.name;
+
+  const prov  = document.getElementById('selProv').options[document.getElementById('selProv').selectedIndex]?.text || '';
+  const reg   = document.getElementById('selReg').options[document.getElementById('selReg').selectedIndex]?.text || '';
+  const dist  = document.getElementById('selDist').options[document.getElementById('selDist').selectedIndex]?.text || '';
+
+  document.getElementById('resultKodepos').textContent = postal || '(tidak tersedia)';
+  document.getElementById('resultAlamat').textContent  = `${vilName}, ${dist}, ${reg}, ${prov}`;
+
+  box.classList.toggle('show', true);
+}
+
+// ── Helpers ──────────────────────────────────────────────────────
+function resetFrom(level) {
+  const order = ['reg', 'dist', 'vil'];
+  const idx   = order.indexOf(level);
+  order.slice(idx).forEach(id => {
+    const sel = document.getElementById(`sel${capitalize(id)}`);
+    sel.innerHTML = `<option value="">— Pilih ${labels[id]} —</option>`;
+    sel.disabled = true;
+  });
+  document.getElementById('resultBox').classList.remove('show');
+}
+
+const labels = { reg: 'Kab/Kota', dist: 'Kecamatan', vil: 'Kel/Desa' };
+const capitalize = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+function setLoading(selId, loading) {
+  const sel = document.getElementById(selId);
+  if (loading) {
+    sel.innerHTML = `<option>⏳ Memuat…</option>`;
+  }
+}
+
+function fmt(n) {
+  return Number(n).toLocaleString('id-ID');
+}
+
+async function apiFetch(path) {
+  const url   = `${API_BASE}/${path}`;
+  const logId = addLog('pending', `GET`, url);
+
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    updateLog(logId, 'ok', `${res.status} OK · ${Array.isArray(data) ? data.length + ' items' : 'object'}`);
+    return data;
+  } catch (e) {
+    updateLog(logId, 'error', `${e.message}`);
+    return null;
+  }
+}
+
+let logCounter = 0;
+
+function addLog(status, method, url) {
+  if (logFirst) {
+    document.getElementById('logContainer').innerHTML = '';
+    logFirst = false;
+  }
+
+  const id = `log-${++logCounter}`;
+  reqCount++;
+  document.getElementById('reqCount').textContent = `${reqCount} request${reqCount > 1 ? 's' : ''}`;
+
+  // Trim URL display
+  const displayUrl = url.replace(API_BASE + '/', '');
+
+  const el = document.createElement('div');
+  el.className = 'log-item';
+  el.id = id;
+  el.innerHTML = `
+    <span class="method ${status}">${method}</span>
+    <span class="url"><span>${displayUrl}</span></span>
+    <span class="spinner" id="${id}-spin"></span>
+  `;
+
+  const container = document.getElementById('logContainer');
+  container.prepend(el);
+
+  // Keep only 20 entries
+  while (container.children.length > 20) {
+    container.removeChild(container.lastChild);
+  }
+
+  return id;
+}
+
+function updateLog(id, status, msg) {
+  const el   = document.getElementById(id);
+  const spin = document.getElementById(`${id}-spin`);
+  if (spin) spin.remove();
+
+  const methodEl = el?.querySelector('.method');
+  if (methodEl) {
+    methodEl.className = `method ${status}`;
+    methodEl.textContent = status === 'ok' ? '200' : 'ERR';
+  }
+
+  const urlEl = el?.querySelector('.url');
+  if (urlEl) {
+    const extra = document.createElement('span');
+    extra.style.cssText = 'color:var(--muted);margin-left:8px;font-size:0.72rem';
+    extra.textContent = msg;
+    urlEl.appendChild(extra);
+  }
+}
+
+// ── Start ────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
